@@ -61,8 +61,8 @@ done
 
 # If not specified, pick default build number for corresponding versions
 if [[ -z ${build+x} ]]; then
-  if [[ "$version" == "6.0.2" ]]; then
-    build="291"
+  if [[ "$version" == "6.4.2" ]]; then
+    build="387"
   else
     LogError "Version \"$version\" not recognized and build number not specified (via -b option)"
   fi

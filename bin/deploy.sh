@@ -84,7 +84,7 @@ if [[ -z ${secret+x} ]]; then
   LogError "Application Secret must be specified (via -S option)"
 fi
 
-base_uri="https://raw.githubusercontent.com/trifacta/azure-deploy/$branch"
+base_uri="https://raw.githubusercontent.com/SibaniSahu/trifacta/$branch"
 bindir_uri="$base_uri/bin"
 
 function RunScript() {

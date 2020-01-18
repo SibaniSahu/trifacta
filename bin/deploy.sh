@@ -2,8 +2,8 @@
 
 set -exo pipefail
 
-version="6.0.2"
-branch="master"
+version="6.4.2"
+branch="release/6.4"
 directory_id="DIRECTORY_ID"
 application_id="APPLICATION_ID"
 secret="APPLICATION_SECRET"
@@ -61,8 +61,8 @@ done
 
 # If not specified, pick default build number for corresponding versions
 if [[ -z ${build+x} ]]; then
-  if [[ "$version" == "6.0.2" ]]; then
-    build="291"
+  if [[ "$version" == "6.4.2" ]]; then
+    build="387"
   else
     LogError "Version \"$version\" not recognized and build number not specified (via -b option)"
   fi
@@ -84,7 +84,7 @@ if [[ -z ${secret+x} ]]; then
   LogError "Application Secret must be specified (via -S option)"
 fi
 
-base_uri="https://raw.githubusercontent.com/trifacta/azure-deploy/$branch"
+base_uri="https://raw.githubusercontent.com/SibaniSahu/trifacta/$branch"
 bindir_uri="$base_uri/bin"
 
 function RunScript() {

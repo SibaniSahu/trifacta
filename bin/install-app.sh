@@ -42,7 +42,7 @@ trifacta_deb_filename="trifacta-server-${version}-${build}~xenial_amd64.deb"
 trifacta_license_filename="license.json"
 
 trifacta_uri_base="https://trifactamarketplace.blob.core.windows.net/artifacts"
-trifacta_deb_uri="$https://ftp.trifacta.com/file/d/Uploads/${trifacta_deb_filename}?${shared_access_signature}"
+trifacta_deb_uri="${trifacta_uri_base}/${trifacta_deb_filename}?${shared_access_signature}"
 trifacta_deb_path="${script_dir}/${trifacta_deb_filename}"
 trifacta_license_uri="${trifacta_uri_base}/${trifacta_license_filename}?${shared_access_signature}"
 trifacta_license_path="/opt/trifacta/license/${trifacta_license_filename}"

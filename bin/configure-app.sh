@@ -472,13 +472,13 @@ cat > "$connection_file" << EOF
 	"connectParams": 
 	   { "vendor": "hive", 
 	     "vendorName": "hive", 
-		 "host": "$zk_host_str", 
+		 "host": `${zk_host_str}`, 
 		 "port": "2181", 
 		 "jdbc": "hive2", 
 		 "defaultDatabase": "default"
 	   }, 
 	   "id": 1, 
-	   "host": "$zk_host_str", 
+	   "host": `${zk_host_str}`, 
 	   "port": 2181, 
 	   "vendor": "hive", 
 	   "params": {
@@ -509,7 +509,7 @@ EOF
      local URL="$a1"
 
 	# store the whole response with the status at the and
-	HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -H "Content-Type:application/json" -u admin@trifacta.local:admin -d @connection_file -w \ "%{http_code}" \
+	HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -H "Content-Type:application/json" -u admin@trifacta.local:admin -d @"$connection_file" -w \ "%{http_code}" \
 			-o >(cat >"$output_file") \
 			"$URL")
 

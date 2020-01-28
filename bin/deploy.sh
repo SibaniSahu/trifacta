@@ -131,6 +131,6 @@ done
 RunScript prepare-edge-node.sh
 RunScript install-app.sh -v "$version" -b "$build" -s "$shared_access_signature"
 RunScript configure-db.sh
-RunScript configure-app.sh -d "$directory_id" -a "$application_id" -S "$secret" -t "$wasb_sas_token" -K "$key_vault_url"
+RunScript configure-app.sh -d "$directory_id" -a "$application_id" -S "$secret" -t "$wasb_sas_token" -K "$key_vault_url" -c “$clusterName”
 
 popd 2>&1 > /dev/null

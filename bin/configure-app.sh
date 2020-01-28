@@ -9,6 +9,7 @@ application_id=""
 secret=""
 wasb_sas_token=""
 key_vault_url=""
+cluster_name=""
 
 function Usage() {
   cat << EOF
@@ -20,17 +21,19 @@ Options:
   -S <secret>    Registered application\'s key for access to ADLS. Required when storage is ADLS. [default: $secret]
   -t <sas token> Shared Access Signature token. Required when storage is WASB.
   -K <key vault URL> Azure Key Vault URL. Required when storage is ADLS.
+  -c <cluster name> Cluster Name
   -h             This message.
 EOF
 }
 
-while getopts "u:d:a:S:t:K:h" opt; do
+while getopts "u:d:a:S:t:K:c:h" opt; do
   case $opt in
     d  ) directory_id=$OPTARG ;;
     a  ) application_id=$OPTARG ;;
     S  ) secret=$OPTARG ;;
     t  ) wasb_sas_token=$OPTARG ;;
     K  ) key_vault_url=$OPTARG ;;
+	c  ) cluster_name=$OPTARG ;;
     h  ) Usage && exit 0 ;;
     \? ) LogError "Invalid option: -$OPTARG" ;;
     :  ) LogError "Option -$OPTARG requires an argument." ;;
@@ -498,8 +501,12 @@ EOF
 
   LogInfo "Creating Hive connection"
   
-	 local URL="http://localhost:3005/v4/connection?"
-
+	 a1="http://"
+	 a1+="$cluster_name"
+	 a1+="-tri.apps.azurehdinsight.net"
+	 a1+="/v4/connection?"
+	 
+     local URL="$a1"
 
 	# store the whole response with the status at the and
 	HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -H "Content-Type:application/json" -u admin@trifacta.local:admin -d @connection_file -w \ "%{http_code}" \

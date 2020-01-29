@@ -9,6 +9,7 @@ application_id="APPLICATION_ID"
 secret="APPLICATION_SECRET"
 wasb_sas_token="WASB_SAS_TOKEN"
 key_vault_url="KEY_VAULT_URL"
+cluster_name=""
 
 tmpdir="/tmp/trifacta-deploy"
 
@@ -34,6 +35,7 @@ Options:
   -S <secret>    Registered application\'s key. Required. [default: $secret]
   -t <wasb sas token> Shared Access Signature token for WASB access. Required when storage is WASB.
   -K <key vault URL> Azure Key Vault URL. Required when storage is ADLS.
+  -c <cluster name> Cluster Name
   -h             This message
 EOF
 }
@@ -53,6 +55,7 @@ while getopts "v:b:B:s:d:a:S:t:K:h" opt; do
     S  ) secret=$OPTARG ;;
     t  ) wasb_sas_token=$OPTARG ;;
     K  ) key_vault_url=$OPTARG ;;
+    c  ) cluster_name=$OPTARG ;;
     h  ) Usage && exit 0 ;;
     \? ) LogError "Invalid option: -$OPTARG" ;;
     :  ) LogError "Option -$OPTARG requires an argument." ;;
@@ -131,6 +134,6 @@ done
 RunScript prepare-edge-node.sh
 RunScript install-app.sh -v "$version" -b "$build" -s "$shared_access_signature"
 RunScript configure-db.sh
-RunScript configure-app.sh -d "$directory_id" -a "$application_id" -S "$secret" -t "$wasb_sas_token" -K "$key_vault_url" -c “$clusterName”
+RunScript configure-app.sh -d "$directory_id" -a "$application_id" -S "$secret" -t "$wasb_sas_token" -K "$key_vault_url" -c “$cluster_name”
 
 popd 2>&1 > /dev/null

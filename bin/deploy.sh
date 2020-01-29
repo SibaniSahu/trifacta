@@ -44,7 +44,7 @@ LogInfo()    { echo -e "$(date +'%Y-%m-%d %H:%M:%S') [INFO] $1" ; }
 LogWarning() { echo -e "$(date +'%Y-%m-%d %H:%M:%S') [WARNING] $1" ; }
 LogError()   { echo -e "$(date +'%Y-%m-%d %H:%M:%S') [ERROR] $1" >&2 && exit 1; }
 
-while getopts "v:b:B:s:d:a:S:t:K:h" opt; do
+while getopts "v:b:B:s:d:a:S:t:K:c:h" opt; do
   case $opt in
     v  ) version=$OPTARG ;;
     b  ) build=$OPTARG ;;

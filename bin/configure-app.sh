@@ -9,7 +9,6 @@ application_id=""
 secret=""
 wasb_sas_token=""
 key_vault_url=""
-cluster_name=""
 
 function Usage() {
   cat << EOF
@@ -21,19 +20,17 @@ Options:
   -S <secret>    Registered application\'s key for access to ADLS. Required when storage is ADLS. [default: $secret]
   -t <sas token> Shared Access Signature token. Required when storage is WASB.
   -K <key vault URL> Azure Key Vault URL. Required when storage is ADLS.
-  -c <cluster name> Cluster Name
   -h             This message.
 EOF
 }
 
-while getopts "u:d:a:S:t:K:c:h" opt; do
+while getopts "u:d:a:S:t:K:h" opt; do
   case $opt in
     d  ) directory_id=$OPTARG ;;
     a  ) application_id=$OPTARG ;;
     S  ) secret=$OPTARG ;;
     t  ) wasb_sas_token=$OPTARG ;;
     K  ) key_vault_url=$OPTARG ;;
-	c  ) cluster_name=$OPTARG ;;
     h  ) Usage && exit 0 ;;
     \? ) LogError "Invalid option: -$OPTARG" ;;
     :  ) LogError "Option -$OPTARG requires an argument." ;;
@@ -465,68 +462,28 @@ function StartTrifacta() {
 
 function CreateHiveConnection() {
   local connection_file="$script_dir/hive-connection.json"
-  local output_file="$script_dir/hive-connection-output.json"
   local zk_host_str=$(GetHadoopProperty "hive.zookeeper.quorum" "/etc/hive/conf/hive-site.xml")
 cat > "$connection_file" << EOF
 {
-	"connectParams": 
-	   { "vendor": "hive", 
-	     "vendorName": "hive", 
-		 "host": `${zk_host_str}`, 
-		 "port": "2181", 
-		 "jdbc": "hive2", 
-		 "defaultDatabase": "default"
-	   }, 
-	   "id": 1, 
-	   "host": `${zk_host_str}`, 
-	   "port": 2181, 
-	   "vendor": "hive", 
-	   "params": {
-	      "jdbc": "hive2", 
-		  "connectStringOptions": ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2", 
-		  "defaultDatabase": "default"
-	    }, 
-		"ssl": false,
-		"vendorName": "hive",
-		"name": "hive",
-		"description": "Hive connection",
-		"type": "jdbc",
-		"isGlobal": true,
-		"credentialType": "conf",
-		"credentialsShared": true,
-		"disableTypeInference": false,
-		"credentials": []
+    "jdbc": "hive2",
+    "defaultDatabase": "default",
+    "connectStrOpts": ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2"
 }
 EOF
 
   LogInfo "Creating Hive connection"
-  
-	 a1="http://"
-	 a1+="$cluster_name"
-	 a1+="-tri.apps.azurehdinsight.net"
-	 a1+="/v4/connection?"
-	 
-     local URL="$a1"
-
-	# store the whole response with the status at the and
-	HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -H "Content-Type:application/json" -u admin@trifacta.local:admin -d @"$connection_file" -w \ "%{http_code}" \
-			-o >(cat >"$output_file") \
-			"$URL")
-
-	# extract the body
-	HTTP_BODY=$(echo $HTTP_RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
-
-	# extract the status
-	HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-
-	# print the body
-	echo "$HTTP_BODY"
-
-	# example using the status
-	if [ ! $HTTP_STATUS -eq 200  ]; then
-	  echo "Error [HTTP status: $HTTP_STATUS]"
-	  exit 1
-	fi
+  $trifacta_basedir/bin/trifacta_cli.py \
+    create_connection \
+    --user_name admin@trifacta.local \
+    --password admin \
+    --conn_name hive \
+    --conn_host "$zk_host_str" \
+    --conn_port 2181 \
+    --conn_credential_type trifacta_service \
+    --conn_type hadoop_hive \
+    --conn_params_location "$connection_file" \
+    --conn_skip_test \
+    --conn_is_global
 }
 
 BackupFile "$triconf"

@@ -83,6 +83,7 @@ fi
 LogInfo "Installing some known dependencies"
 apt-get update
 apt-get install -y openjdk-8-jre-headless postgresql-9.6 python-psycopg2
+apt-get install -y python-kerberos python-requests
 
 # Install dependencies wth strict version requirements
 strict_dependencies=$(dpkg -I "$trifacta_deb_path" | grep -oP ' Depends: \K.*' | tr -d " ()" | tr , '\n' | grep -v ">" | grep = | tr '\n' ' ')
